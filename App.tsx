@@ -48,7 +48,7 @@ const App: React.FC = () => {
   const [forceDesktop, setForceDesktop] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Key to force re-render/reset components with local state (like SmartSplitter's currentText)
+  // Key to force re-render/reset components with local state
   const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
@@ -61,7 +61,8 @@ const App: React.FC = () => {
 
   const [basics, setBasics] = useState<StudyMetadata & { lesson_title: string }>(INITIAL_BASICS);
 
-  const [activeTab, setActiveTab] = useState<'upload' | 'basics' | 'smart'>('basics');
+  // Initial tab changed to 'smart' to reflect its new position on the far left
+  const [activeTab, setActiveTab] = useState<'upload' | 'basics' | 'smart'>('smart');
   const [isLoading, setIsLoading] = useState(false);
   const [extractionProgress, setExtractionProgress] = useState(0);
   const [smartBlocks, setSmartBlocks] = useState<SplitBlock[]>([]);
@@ -69,7 +70,6 @@ const App: React.FC = () => {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [focusEditText, setFocusEditText] = useState('');
 
-  // Strictly check if there is ANY user data to determine if "Reset" should show
   const hasAnyData = useMemo(() => {
     const hasBasics = Object.values(basics).some(v => typeof v === 'string' && v.trim() !== "");
     const hasBlocks = smartBlocks.length > 0;
@@ -144,7 +144,7 @@ const App: React.FC = () => {
       setEditingBlockId(null);
       setFocusEditText('');
       setResetKey(prev => prev + 1);
-      setActiveTab('basics');
+      setActiveTab('smart');
     }
   };
 
@@ -194,7 +194,6 @@ const App: React.FC = () => {
         return;
     }
     const jsonStr = generateJSON(basics, smartBlocks);
-    // Requested Format: "Week # - Week Title - Week Day"
     const fileName = `${basics.week_number} - ${basics.week_title || 'No Title'} - ${basics.day_name || 'No Day'}.json`;
     downloadJSON(jsonStr, fileName);
   };
@@ -274,13 +273,17 @@ const App: React.FC = () => {
             <div className="overflow-y-auto custom-scrollbar flex-1 space-y-6 pr-1">
               <section className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                 <div className="flex border-b border-gray-200 bg-gray-50/50">
-                  <button onClick={() => setActiveTab('basics')} className={`flex-1 py-3 text-[10px] font-black uppercase flex items-center justify-center gap-1.5 transition-colors ${activeTab === 'basics' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>
-                    <PencilSquareIcon className="w-3.5 h-3.5" /> {t.tabs.basics}
-                  </button>
+                  {/* Reordered Tabs: Smart -> Basics -> Upload (Disabled) */}
                   <button onClick={() => setActiveTab('smart')} className={`flex-1 py-3 text-[10px] font-black uppercase flex items-center justify-center gap-1.5 transition-colors ${activeTab === 'smart' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>
                     <ScissorsIcon className="w-3.5 h-3.5" /> {t.tabs.smart}
                   </button>
-                  <button onClick={() => setActiveTab('upload')} className={`flex-1 py-3 text-[10px] font-black uppercase flex items-center justify-center gap-1.5 transition-colors ${activeTab === 'upload' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>
+                  <button onClick={() => setActiveTab('basics')} className={`flex-1 py-3 text-[10px] font-black uppercase flex items-center justify-center gap-1.5 transition-colors ${activeTab === 'basics' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>
+                    <PencilSquareIcon className="w-3.5 h-3.5" /> {t.tabs.basics}
+                  </button>
+                  <button 
+                    disabled 
+                    className="flex-1 py-3 text-[10px] font-black uppercase flex items-center justify-center gap-1.5 transition-colors text-gray-300 cursor-not-allowed bg-gray-100/50"
+                  >
                     <PhotoIcon className="w-3.5 h-3.5" /> {t.tabs.upload}
                   </button>
                 </div>
