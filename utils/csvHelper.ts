@@ -1,3 +1,4 @@
+
 import { CSVRow } from '../types';
 
 export const DEFAULT_HEADERS: (keyof CSVRow)[] = [
@@ -126,10 +127,16 @@ export const downloadJSON = (jsonString: string, filename: string = 'study-guide
   const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
+  
+  link.style.display = 'none';
+  link.href = url;
+  link.download = filename;
+  
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+  
+  setTimeout(() => {
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, 100);
 };

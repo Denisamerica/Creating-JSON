@@ -1,9 +1,9 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { UILanguage, translations } from '../utils/translations';
 import { 
   ScissorsIcon, 
   CommandLineIcon,
-  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 interface SplitBlock {
@@ -16,11 +16,20 @@ interface SmartSplitterProps {
   onBlocksUpdate: (blocks: SplitBlock[]) => void;
   blocks: SplitBlock[];
   uiLanguage: UILanguage;
+  // Novas props para controle externo do texto
+  text: string;
+  onTextChange: (text: string) => void;
 }
 
-export const SmartSplitter: React.FC<SmartSplitterProps> = ({ onBlocksUpdate, blocks, uiLanguage }) => {
+export const SmartSplitter: React.FC<SmartSplitterProps> = ({ 
+  onBlocksUpdate, 
+  blocks, 
+  uiLanguage, 
+  text: currentText, 
+  onTextChange: setCurrentText 
+}) => {
   const t = translations[uiLanguage];
-  const [currentText, setCurrentText] = useState('');
+  // Removemos o estado interno 'currentText' e usamos as props
   const [isNamingModalOpen, setIsNamingModalOpen] = useState(false);
   const [namingInput, setNamingInput] = useState('');
   const [splitIndex, setSplitIndex] = useState<number | null>(null);
@@ -37,8 +46,12 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({ onBlocksUpdate, bl
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Tab') {
       e.preventDefault();
+      
+      if (!currentText || currentText.trim().length === 0) return;
+
       const target = e.target as HTMLTextAreaElement;
       const cursorPosition = target.selectionStart;
+      
       if (cursorPosition === 0 && currentText.length > 0) return;
 
       setSplitIndex(cursorPosition);
@@ -78,21 +91,17 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({ onBlocksUpdate, bl
     };
 
     onBlocksUpdate([...blocks, newBlock]);
-    setCurrentText(remainingText);
+    setCurrentText(remainingText); // Atualiza via prop do pai
     setIsNamingModalOpen(false);
     setSplitIndex(null);
 
     setTimeout(() => {
         if (textareaRef.current) {
             textareaRef.current.focus();
-            let nextPos = remainingText.indexOf('\n');
-            if (nextPos !== -1) {
-                const doubleBreak = remainingText.indexOf('\n\n');
-                if (doubleBreak !== -1) nextPos = doubleBreak;
-            } else {
-                nextPos = remainingText.length;
-            }
-            textareaRef.current.setSelectionRange(nextPos, nextPos);
+            textareaRef.current.scrollTop = 0;
+            const nextNewLine = remainingText.indexOf('\n');
+            const targetPos = nextNewLine !== -1 ? nextNewLine : remainingText.length;
+            textareaRef.current.setSelectionRange(targetPos, targetPos);
         }
     }, 10);
   };
@@ -120,16 +129,10 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({ onBlocksUpdate, bl
            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
              <kbd className="bg-white border border-gray-200 px-1.5 py-0.5 rounded shadow-sm text-indigo-600">TAB</kbd> {t.smart.divide}
            </div>
-           <button 
-              onClick={() => confirm(t.smart.reset) && (setCurrentText(''))}
-              className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-           >
-              <ArrowPathIcon className="w-5 h-5" />
-           </button>
         </div>
       </div>
 
-      <div className="flex-1 p-10 relative bg-white">
+      <div className="flex-1 p-10 relative bg-white overflow-hidden">
         <textarea
           ref={textareaRef}
           className="w-full h-full resize-none border-none focus:ring-0 text-xl leading-relaxed text-gray-700 placeholder-gray-100 custom-scrollbar font-medium selection:bg-indigo-100 selection:text-indigo-900"
@@ -165,7 +168,12 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({ onBlocksUpdate, bl
                 placeholder="?"
                 maxLength={1}
                 value={namingInput}
-                onChange={(e) => setNamingInput(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '' || /^[tqx]$/i.test(val)) {
+                    setNamingInput(val.toUpperCase());
+                  }
+                }}
                 onKeyDown={handleModalKeyDown}
               />
               <div className="mt-8 flex justify-center gap-4 text-[9px] font-black uppercase tracking-widest text-gray-400">

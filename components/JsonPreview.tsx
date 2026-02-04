@@ -1,7 +1,7 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { UILanguage, translations } from '../utils/translations';
-import { CommandLineIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
+import { CommandLineIcon, DocumentDuplicateIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { generateJSON } from '../utils/csvHelper';
 
 interface JsonPreviewProps {
@@ -12,14 +12,34 @@ interface JsonPreviewProps {
 
 export const JsonPreview: React.FC<JsonPreviewProps> = ({ basics, blocks, uiLanguage }) => {
   const t = translations[uiLanguage];
+  const [copied, setCopied] = useState(false);
   
   const jsonContent = useMemo(() => {
     return generateJSON(basics, blocks);
   }, [basics, blocks]);
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(jsonContent);
-    alert(uiLanguage === 'pt' ? 'Copiado para a área de transferência!' : uiLanguage === 'es' ? '¡Copiado al portapapeles!' : 'Copied to clipboard!');
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(jsonContent);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback para navegadores antigos ou contextos inseguros
+      const textArea = document.createElement("textarea");
+      textArea.value = jsonContent;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        alert("Erro ao copiar. Por favor, selecione o texto e copie manualmente.");
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   return (
@@ -33,15 +53,22 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ basics, blocks, uiLang
         </div>
         <button 
           onClick={copyToClipboard}
-          className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-gray-700"
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+            copied 
+              ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+              : 'bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white border-gray-700'
+          }`}
         >
-          <DocumentDuplicateIcon className="w-3.5 h-3.5" />
-          {uiLanguage === 'pt' ? 'Copiar' : uiLanguage === 'es' ? 'Copiar' : 'Copy'}
+          {copied ? <CheckIcon className="w-3.5 h-3.5" /> : <DocumentDuplicateIcon className="w-3.5 h-3.5" />}
+          {copied 
+            ? (uiLanguage === 'pt' ? 'Copiado!' : 'Copied!') 
+            : (uiLanguage === 'pt' ? 'Copiar' : uiLanguage === 'es' ? 'Copiar' : 'Copy')
+          }
         </button>
       </div>
       
       <div className="flex-1 overflow-auto custom-scrollbar p-6 font-mono text-sm leading-relaxed">
-        <pre className="text-indigo-300">
+        <pre className="text-indigo-300 whitespace-pre-wrap break-words">
           {jsonContent}
         </pre>
       </div>

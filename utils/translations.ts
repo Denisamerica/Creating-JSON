@@ -38,7 +38,7 @@ export const translations = {
       emptyState: "Use o editor à direita para criar blocos automaticamente",
       addBlock: "Adicionar Bloco Extra",
       updateTable: "Salvar Alterações",
-      generateTable: "Finalizar Edição",
+      generateTable: "JSON Code",
       focusEdit: "Modo Foco",
       save: "Salvar Alterações",
       modalTitle: "Editar Bloco"
@@ -50,6 +50,13 @@ export const translations = {
       empty: "-- vazio --",
       confirmClear: "Deseja limpar todos os blocos e informações atuais?",
       deleteColConfirm: "Deseja remover este item?"
+    },
+    preview: {
+      button: "Simular Lição",
+      title: "Simulação da Experiência do Usuário",
+      subtitle: "Veja exatamente como os blocos serão apresentados no aplicativo final. Clique em qualquer texto para corrigir.",
+      inputPlaceholder: "O aluno digitará a resposta aqui...",
+      close: "Fechar Simulação"
     },
     upload: {
       analyzing: "Analisando Imagem...",
@@ -111,7 +118,7 @@ export const translations = {
       emptyState: "Use the editor on the right to create blocks automatically",
       addBlock: "Add Extra Block",
       updateTable: "Save Changes",
-      generateTable: "Finalize Editing",
+      generateTable: "JSON Code",
       focusEdit: "Focus Mode",
       save: "Save Changes",
       modalTitle: "Edit Block"
@@ -123,6 +130,13 @@ export const translations = {
       empty: "-- empty --",
       confirmClear: "Do you want to clear all blocks and information?",
       deleteColConfirm: "Do you want to remove this item?"
+    },
+    preview: {
+      button: "Simulate Lesson",
+      title: "User Experience Simulation",
+      subtitle: "See exactly how blocks will be presented in the final app. Click any text to fix typos.",
+      inputPlaceholder: "Student will type answer here...",
+      close: "Close Simulation"
     },
     upload: {
       analyzing: "Analyzing Image...",
@@ -184,7 +198,7 @@ export const translations = {
       emptyState: "Usa el editor de la derecha para crear bloques automáticamente",
       addBlock: "Añadir Bloque Extra",
       updateTable: "Guardar Cambios",
-      generateTable: "Finalizar Edición",
+      generateTable: "JSON Code",
       focusEdit: "Modo Enfoque",
       save: "Guardar Cambios",
       modalTitle: "Editar Bloco"
@@ -196,6 +210,13 @@ export const translations = {
       empty: "-- vacío --",
       confirmClear: "¿Deseas limpiar todos los bloques e información actual?",
       deleteColConfirm: "¿Deseas eliminar este item?"
+    },
+    preview: {
+      button: "Simular Lección",
+      title: "Simulación de Experiencia de Usuario",
+      subtitle: "Vea exactamente cómo se presentarán los bloques en la aplicación final. Haga clic en cualquier texto para corregir.",
+      inputPlaceholder: "El estudiante escribirá la respuesta aquí...",
+      close: "Cerrar Simulación"
     },
     upload: {
       analyzing: "Analizando Imagen...",
