@@ -3,11 +3,16 @@ export type UILanguage = 'pt' | 'en' | 'es';
 
 export const translations = {
   pt: {
-    appTitle: "JSON Builder Pro",
+    appTitle: "StudyGuide Builder",
+    modeJson: "JSON Builder",
+    modeCsv: "CSV Builder",
     tabs: {
       basics: "Básico",
       smart: "Smart Split",
-      upload: "Imagem"
+      upload: "Imagem",
+      csvEntry: "Nova Linha",
+      csvTable: "Tabela CSV",
+      files: "Arquivos"
     },
     basics: {
       title: "Identificação",
@@ -18,6 +23,8 @@ export const translations = {
       language: "Idioma",
       dayNumber: "Dia #",
       dayName: "Nome do Dia",
+      week: "Semana",
+      day: "Dia",
       ready: "PRONTO",
       select: "Selecionar...",
       days: ["Sábado", "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta"]
@@ -33,6 +40,7 @@ export const translations = {
       t: "Título",
       x: "Texto",
       q: "Pergunta",
+      i: "Input",
       cancel: "Cancelar (ESC)",
       blockEditor: "Editor de Blocos",
       emptyState: "Use o editor à direita para criar blocos automaticamente",
@@ -41,20 +49,25 @@ export const translations = {
       generateTable: "JSON Code",
       focusEdit: "Modo Foco",
       save: "Salvar Alterações",
-      modalTitle: "Editar Bloco"
+      modalTitle: "Editar Bloco",
+      editCode: "Editar o Código",
+      saveCode: "Salvar Código",
+      saveAndViewJson: "Salvar e Ver JSON",
+      syncToBlocks: "Sincronizar com Blocos"
     },
     table: {
-      preview: "Prévia do JSON",
-      rows: "Blocos",
+      preview: "Prévia da Tabela",
+      rows: "Linhas",
       clear: "Limpar Tudo",
       empty: "-- vazio --",
-      confirmClear: "Deseja limpar todos os blocos e informações atuais?",
-      deleteColConfirm: "Deseja remover este item?"
+      confirmClear: "Deseja limpar todos os dados atuais?",
+      deleteColConfirm: "Deseja remover este item?",
+      exportCsv: "Exportar CSV"
     },
     preview: {
       button: "Simular Lição",
       title: "Simulação da Experiência do Usuário",
-      subtitle: "Veja exatamente como os blocos serão apresentados no aplicativo final. Clique em qualquer texto para corrigir.",
+      subtitle: "Veja exatamente como os blocos serão apresentados no aplicativo final.",
       inputPlaceholder: "O aluno digitará a resposta aqui...",
       close: "Fechar Simulação"
     },
@@ -63,7 +76,7 @@ export const translations = {
       extracting: "Extraindo texto e estrutura",
       processing: "Processando",
       cancel: "Cancelar Processo",
-      title: "Upload de Imagem do Guia",
+      title: "Upload de Imagem",
       subtitle: "Arraste e solte ou clique para procurar",
       selectFile: "Selecionar Arquivo",
       support: "Suporta JPG, PNG"
@@ -73,21 +86,42 @@ export const translations = {
       csv: "Download CSV",
       weekRequired: "O campo Week Number é obrigatório."
     },
-    welcome: {
-      title: "Inicie seu Projeto",
-      description: "Carregue uma imagem ou clique em Smart Split para começar a organizar seu conteúdo."
+    notes: {
+      button: "Notas",
+      title: "Bloco de Notas & Histórico",
+      currentTab: "Rascunho Atual",
+      historyTab: "Arquivo de Notas",
+      placeholder: "Escreva observações aqui. Esta nota será salva automaticamente ao resetar ou exportar.",
+      emptyHistory: "Nenhuma nota arquivada ainda.",
+      date: "Data",
+      content: "Conteúdo",
+      actions: "Ações",
+      save: "Salvar",
+      delete: "Excluir",
+      deleteAll: "Excluir Tudo",
+      edit: "Editar",
+      source: "Origem"
     },
-    mobileBlock: {
-      title: "Acesso Restrito",
-      message: "Este aplicativo foi projetado exclusivamente para uso em computadores desktop."
+    importJson: {
+      button: "Abrir JSON",
+      title: "Arquivos JSON",
+      subtitle: "Clique para carregar no editor",
+      empty: "Nenhum arquivo carregado",
+      load: "Carregar no Editor",
+      remove: "Remover"
     }
   },
   en: {
-    appTitle: "JSON Builder Pro",
+    appTitle: "StudyGuide Builder",
+    modeJson: "JSON Builder",
+    modeCsv: "CSV Builder",
     tabs: {
       basics: "Basics",
       smart: "Smart Split",
-      upload: "Image"
+      upload: "Image",
+      csvEntry: "New Row",
+      csvTable: "CSV Table",
+      files: "Files"
     },
     basics: {
       title: "Basics",
@@ -98,6 +132,8 @@ export const translations = {
       language: "Language",
       dayNumber: "Day #",
       dayName: "Day Name",
+      week: "Week",
+      day: "Day",
       ready: "READY",
       select: "Select...",
       days: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
@@ -113,6 +149,7 @@ export const translations = {
       t: "Title",
       x: "Text",
       q: "Question",
+      i: "Input",
       cancel: "Cancel (ESC)",
       blockEditor: "Block Editor",
       emptyState: "Use the editor on the right to create blocks automatically",
@@ -121,20 +158,25 @@ export const translations = {
       generateTable: "JSON Code",
       focusEdit: "Focus Mode",
       save: "Save Changes",
-      modalTitle: "Edit Block"
+      modalTitle: "Edit Block",
+      editCode: "Edit the Code",
+      saveCode: "Save Code",
+      saveAndViewJson: "Save & View JSON",
+      syncToBlocks: "Sync to Blocks"
     },
     table: {
-      preview: "JSON Preview",
-      rows: "Blocks",
+      preview: "Table Preview",
+      rows: "Rows",
       clear: "Clear All",
       empty: "-- empty --",
-      confirmClear: "Do you want to clear all blocks and information?",
-      deleteColConfirm: "Do you want to remove this item?"
+      confirmClear: "Do you want to clear all current data?",
+      deleteColConfirm: "Do you want to remove this item?",
+      exportCsv: "Export CSV"
     },
     preview: {
       button: "Simulate Lesson",
       title: "User Experience Simulation",
-      subtitle: "See exactly how blocks will be presented in the final app. Click any text to fix typos.",
+      subtitle: "See exactly how blocks will be presented in the final app.",
       inputPlaceholder: "Student will type answer here...",
       close: "Close Simulation"
     },
@@ -143,7 +185,7 @@ export const translations = {
       extracting: "Extracting text and structure",
       processing: "Processing",
       cancel: "Cancel Process",
-      title: "Upload Guide Image",
+      title: "Upload Image",
       subtitle: "Drag & drop or click to browse",
       selectFile: "Select File",
       support: "Supports JPG, PNG"
@@ -153,21 +195,41 @@ export const translations = {
       csv: "Download CSV",
       weekRequired: "The Week Number field is required."
     },
-    welcome: {
-      title: "Start Your Project",
-      description: "Upload an image or click on Smart Split to start organizing your content."
+    notes: {
+      button: "Notes",
+      title: "Notepad & History",
+      currentTab: "Current Draft",
+      historyTab: "Notes Archive",
+      placeholder: "Write observations here. This note will be auto-saved on reset or export.",
+      emptyHistory: "No archived notes yet.",
+      date: "Date",
+      content: "Content",
+      actions: "Actions",
+      save: "Save",
+      delete: "Delete",
+      deleteAll: "Delete All",
+      edit: "Edit",
+      source: "Source"
     },
-    mobileBlock: {
-      title: "Access Restricted",
-      message: "This application is designed exclusively for desktop use."
+    importJson: {
+      button: "Open JSON",
+      title: "JSON Files",
+      subtitle: "Click to load into editor",
+      empty: "No files loaded",
+      load: "Load into Editor",
+      remove: "Remove"
     }
   },
   es: {
-    appTitle: "JSON Builder Pro",
+    appTitle: "StudyGuide Builder",
+    modeJson: "JSON Builder",
+    modeCsv: "CSV Builder",
     tabs: {
       basics: "Básico",
       smart: "Smart Split",
-      upload: "Imagen"
+      upload: "Imagen",
+      csvEntry: "Nueva Fila",
+      csvTable: "Tabla CSV"
     },
     basics: {
       title: "Básico",
@@ -178,6 +240,8 @@ export const translations = {
       language: "Idioma",
       dayNumber: "Día #",
       dayName: "Nombre del Día",
+      week: "Semana",
+      day: "Día",
       ready: "LISTO",
       select: "Seleccionar...",
       days: ["Sábado", "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
@@ -185,7 +249,7 @@ export const translations = {
     smart: {
       title: "Editor de Enfoque",
       subtitle: "Segmentación inteligente con cursor automático",
-      divide: "Dividir",
+      divide: "Divide",
       reset: "¿Reiniciar editor?",
       workspace: "Espacio de Trabalho",
       classify: "Clasificar Bloque",
@@ -193,6 +257,7 @@ export const translations = {
       t: "Título",
       x: "Texto",
       q: "Pregunta",
+      i: "Input",
       cancel: "Cancelar (ESC)",
       blockEditor: "Editor de Blocos",
       emptyState: "Usa el editor de la derecha para crear bloques automáticamente",
@@ -201,20 +266,25 @@ export const translations = {
       generateTable: "JSON Code",
       focusEdit: "Modo Enfoque",
       save: "Guardar Cambios",
-      modalTitle: "Editar Bloco"
+      modalTitle: "Editar Bloco",
+      editCode: "Editar el Código",
+      saveCode: "Guardar Código",
+      saveAndViewJson: "Guardar y Ver JSON",
+      syncToBlocks: "Sincronizar con Bloques"
     },
     table: {
-      preview: "Vista Previa JSON",
-      rows: "Bloques",
+      preview: "Vista Previa de Tabla",
+      rows: "Filas",
       clear: "Limpiar Todo",
       empty: "-- vacío --",
-      confirmClear: "¿Deseas limpiar todos los bloques e información actual?",
-      deleteColConfirm: "¿Deseas eliminar este item?"
+      confirmClear: "¿Deseas limpiar todos los datos actuales?",
+      deleteColConfirm: "¿Deseas eliminar este item?",
+      exportCsv: "Exportar CSV"
     },
     preview: {
       button: "Simular Lección",
       title: "Simulación de Experiencia de Usuario",
-      subtitle: "Vea exactamente cómo se presentarán los bloques en la aplicación final. Haga clic en cualquier texto para corregir.",
+      subtitle: "Vea exactamente cómo se presentarán los bloques en la aplicación final.",
       inputPlaceholder: "El estudiante escribirá la respuesta aquí...",
       close: "Cerrar Simulación"
     },
@@ -233,13 +303,29 @@ export const translations = {
       csv: "Descargar CSV",
       weekRequired: "O campo Week Number é obrigatório."
     },
-    welcome: {
-      title: "Inicie su Proyecto",
-      description: "Cargue una imagen o haga clic en Smart Split para comenzar a organizar su contenido."
+    notes: {
+      button: "Notas",
+      title: "Bloc de Notas & Archivo",
+      currentTab: "Borrador Actual",
+      historyTab: "Archivo de Notas",
+      placeholder: "Escriba observaciones aquí. Esta nota se guardará automáticamente al reiniciar o exportar.",
+      emptyHistory: "No hay notas archivadas todavía.",
+      date: "Fecha",
+      content: "Contenido",
+      actions: "Acciones",
+      save: "Guardar",
+      delete: "Eliminar",
+      deleteAll: "Eliminar Todo",
+      edit: "Editar",
+      source: "Origen"
     },
-    mobileBlock: {
-      title: "Acceso Restringido",
-      message: "Esta aplicación está diseñada exclusivamente para uso en computadoras de escritorio."
+    importJson: {
+      button: "Abrir JSON",
+      title: "Archivos JSON",
+      subtitle: "Haga clic para cargar en el editor",
+      empty: "No hay archivos cargados",
+      load: "Cargar en el Editor",
+      remove: "Eliminar"
     }
   }
 };

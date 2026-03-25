@@ -1,3 +1,4 @@
+
 export interface StudyMetadata {
   week_number: string;
   week_title: string;
@@ -46,4 +47,12 @@ export interface CSVRow extends StudyMetadata {
 
 export interface ExtractedData {
   rows: CSVRow[];
+}
+
+export interface NoteEntry {
+  id: string;
+  timestamp: string;
+  content: string;
+  source: 'manual' | 'reset' | 'export'; // Para saber se foi salvo por reset ou exportação
+  relatedFile?: string; // Nome do arquivo associado se houver
 }

@@ -8,7 +8,7 @@ import {
 
 interface SplitBlock {
   id: string;
-  type: 't' | 'x' | 'q';
+  type: 't' | 'x' | 'q' | 'i';
   text: string;
 }
 
@@ -19,6 +19,7 @@ interface SmartSplitterProps {
   // Novas props para controle externo do texto
   text: string;
   onTextChange: (text: string) => void;
+  onSaveAndViewJson?: () => void;
 }
 
 export const SmartSplitter: React.FC<SmartSplitterProps> = ({ 
@@ -26,7 +27,8 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({
   blocks, 
   uiLanguage, 
   text: currentText, 
-  onTextChange: setCurrentText 
+  onTextChange: setCurrentText,
+  onSaveAndViewJson
 }) => {
   const t = translations[uiLanguage];
   // Removemos o estado interno 'currentText' e usamos as props
@@ -75,7 +77,7 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({
     const input = namingInput.toLowerCase();
     if (!input) return;
 
-    const validFirst = ['t', 'x', 'q'];
+    const validFirst = ['t', 'x', 'q', 'i'];
     const firstChar = input[0];
 
     if (!validFirst.includes(firstChar)) return;
@@ -86,7 +88,7 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({
 
     const newBlock: SplitBlock = {
       id: crypto.randomUUID(),
-      type: firstChar as 't' | 'x' | 'q',
+      type: firstChar as 't' | 'x' | 'q' | 'i',
       text: blockText
     };
 
@@ -129,6 +131,15 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({
            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
              <kbd className="bg-white border border-gray-200 px-1.5 py-0.5 rounded shadow-sm text-indigo-600">TAB</kbd> {t.smart.divide}
            </div>
+           {onSaveAndViewJson && (
+             <button 
+               onClick={onSaveAndViewJson}
+               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-100"
+             >
+               <CommandLineIcon className="w-4 h-4" />
+               {t.smart.saveAndViewJson}
+             </button>
+           )}
         </div>
       </div>
 
@@ -170,7 +181,7 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({
                 value={namingInput}
                 onChange={(e) => {
                   const val = e.target.value;
-                  if (val === '' || /^[tqx]$/i.test(val)) {
+                  if (val === '' || /^[tqxi]$/i.test(val)) {
                     setNamingInput(val.toUpperCase());
                   }
                 }}
@@ -180,6 +191,7 @@ export const SmartSplitter: React.FC<SmartSplitterProps> = ({
                 <span>[T] {t.smart.t}</span>
                 <span>[X] {t.smart.x}</span>
                 <span>[Q] {t.smart.q}</span>
+                <span>[I] {t.smart.i}</span>
               </div>
             </div>
             <button 

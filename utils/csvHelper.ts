@@ -75,6 +75,18 @@ export const downloadCSV = (csvContent: string, filename: string = 'study-guide-
  * Estrutura: [{ week_number, day_number, title, content: [], language }]
  */
 export const generateJSON = (basics: any, blocks: any[]): string => {
+  // Language normalization: en, es, pt
+  let lang = (basics.language || 'en').toLowerCase();
+  if (lang.includes('pt') || lang.includes('port')) lang = 'pt';
+  else if (lang.includes('es') || lang.includes('span')) lang = 'es';
+  else lang = 'en';
+
+  const placeholders: Record<string, string> = {
+    pt: "Escreva tua resposta aqui...",
+    en: "Write your thoughts here...",
+    es: "Escribe tus pensamientos aquí..."
+  };
+
   const content: any[] = [];
   
   blocks.forEach(block => {
@@ -85,7 +97,7 @@ export const generateJSON = (basics: any, blocks: any[]): string => {
       });
     } else if (block.type === 'x') {
       content.push({
-        type: "text", // Replaced "paragraph" with "text" as requested
+        type: "text", 
         text: block.text
       });
     } else if (block.type === 'q') {
@@ -95,19 +107,15 @@ export const generateJSON = (basics: any, blocks: any[]): string => {
         question: block.text,
         content: block.text
       });
-      // Automatic input field after every question
+      // We still add automatic input after question for convenience, 
+      // unless the next block is already an input
+    } else if (block.type === 'i') {
       content.push({
         type: "input",
-        placeholder: "Write your thoughts here..."
+        placeholder: block.text || (placeholders[lang] || placeholders.en)
       });
     }
   });
-
-  // Language normalization: en, es, pt
-  let lang = (basics.language || 'en').toLowerCase();
-  if (lang.includes('pt') || lang.includes('port')) lang = 'pt';
-  else if (lang.includes('es') || lang.includes('span')) lang = 'es';
-  else lang = 'en';
 
   const jsonObject = [
     {
@@ -125,6 +133,24 @@ export const generateJSON = (basics: any, blocks: any[]): string => {
 
 export const downloadJSON = (jsonString: string, filename: string = 'study-guide-export.json') => {
   const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  
+  link.style.display = 'none';
+  link.href = url;
+  link.download = filename;
+  
+  document.body.appendChild(link);
+  link.click();
+  
+  setTimeout(() => {
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, 100);
+};
+
+export const downloadTXT = (content: string, filename: string = 'notes.txt') => {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   

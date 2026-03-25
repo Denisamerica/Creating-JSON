@@ -2,22 +2,33 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CSVRow } from "../types";
 
-const SYSTEM_INSTRUCTION = `
+const JSON_SYSTEM_INSTRUCTION = `
 You are an expert OCR and Data Extraction specialist.
-Your goal is to extract the content of a study guide page as a sequence of distinct blocks.
-
-EXTRACTION RULES:
-1. **Atomic Extraction**: Do NOT merge separate paragraphs into a single block. Each paragraph or section must be its own 'text' block.
-2. **Sequence**: Maintain the exact top-to-bottom order of the page.
-3. **Classification**:
-   - 'title': Daily lesson headings or main titles.
-   - 'text': Reading content, paragraphs, or explanatory notes.
-   - 'question': Direct questions that require user input.
-
-DO NOT try to fit the data into a fixed table structure here. Just provide the raw sequence of what you see on the page.
+Your goal is to extract the content of a study guide page as a sequence of distinct blocks for a JSON structure.
+RULES:
+1. **Atomic Extraction**: Do NOT merge separate paragraphs.
+2. **Sequence**: Maintain exact top-to-bottom order.
+3. **Classification**: 'title', 'text', or 'question'.
 `;
 
-const responseSchema = {
+const CSV_SYSTEM_INSTRUCTION = `
+You are an expert OCR specialist. Your goal is to map the content of a study guide page into a specific CSV structure with fixed columns.
+The structure must follow this flow:
+- lesson_title: The main title of the lesson/page.
+- text_1, text_2, text_3: The first three blocks of introductory text.
+- question_1: The first question or prompt found.
+- text_4: Text between question 1 and 2.
+- question_2: The second question.
+- text_5: Text between question 2 and 3.
+- question_3: The third question.
+- text_6: Text between question 3 and 4.
+- question_4: The fourth question.
+- text_7, text_8: Final concluding blocks of text.
+
+If a block is not found, leave it empty. Ensure questions and texts are separated correctly according to the page layout. Do not include answers in the questions.
+`;
+
+const jsonResponseSchema = {
   type: Type.OBJECT,
   properties: {
     blocks: {
@@ -25,18 +36,31 @@ const responseSchema = {
       items: {
         type: Type.OBJECT,
         properties: {
-          type: { 
-            type: Type.STRING, 
-            description: "One of: title, text, question" 
-          },
-          content: { 
-            type: Type.STRING, 
-            description: "The actual text content of the block." 
-          }
+          type: { type: Type.STRING, description: "title, text, question" },
+          content: { type: Type.STRING, description: "The text content." }
         },
         required: ["type", "content"],
       },
     },
+  },
+};
+
+const csvResponseSchema = {
+  type: Type.OBJECT,
+  properties: {
+    lesson_title: { type: Type.STRING },
+    text_1: { type: Type.STRING },
+    text_2: { type: Type.STRING },
+    text_3: { type: Type.STRING },
+    question_1: { type: Type.STRING },
+    text_4: { type: Type.STRING },
+    question_2: { type: Type.STRING },
+    text_5: { type: Type.STRING },
+    question_3: { type: Type.STRING },
+    text_6: { type: Type.STRING },
+    question_4: { type: Type.STRING },
+    text_7: { type: Type.STRING },
+    text_8: { type: Type.STRING },
   },
 };
 
@@ -50,64 +74,53 @@ export const processImageWithGemini = async (
   signal?: AbortSignal,
   onProgress?: (percentage: number) => void
 ): Promise<ExtractedBlock[]> => {
-  if (!process.env.API_KEY) {
-    throw new Error("API Key is missing");
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+  const result = await ai.models.generateContentStream({
+    model: "gemini-3-flash-preview", 
+    contents: [{ role: "user", parts: [{ inlineData: { mimeType: "image/jpeg", data: base64Image } }, { text: "Extract content as blocks." }] }],
+    config: { systemInstruction: JSON_SYSTEM_INSTRUCTION, responseMimeType: "application/json", responseSchema: jsonResponseSchema },
+  });
+
+  let fullText = '';
+  for await (const chunk of result) {
+    if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+    fullText += chunk.text;
+    onProgress?.(50); 
   }
+  return JSON.parse(fullText).blocks || [];
+};
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const ESTIMATED_CHAR_LENGTH = 2000;
+export const extractCSVDataFromImage = async (
+  base64Image: string,
+  signal?: AbortSignal,
+  onProgress?: (percentage: number) => void
+): Promise<Partial<CSVRow>> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+  onProgress?.(10);
 
+  const result = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [{
+      role: "user",
+      parts: [
+        { inlineData: { mimeType: "image/jpeg", data: base64Image } },
+        { text: "Analyze the image and fill the CSV structure. Distribute texts and questions according to the schema provided." }
+      ]
+    }],
+    config: {
+      systemInstruction: CSV_SYSTEM_INSTRUCTION,
+      responseMimeType: "application/json",
+      responseSchema: csvResponseSchema,
+    },
+  });
+
+  if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+  onProgress?.(100);
+  
   try {
-    onProgress?.(5);
-
-    const result = await ai.models.generateContentStream({
-      model: "gemini-3-flash-preview", 
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              inlineData: {
-                mimeType: "image/jpeg",
-                data: base64Image,
-              },
-            },
-            {
-              text: "Extract all content from this page as a sequential list of blocks. Keep every paragraph separate. Identify titles, reading texts, and questions.",
-            },
-          ],
-        },
-      ],
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        responseMimeType: "application/json",
-        responseSchema: responseSchema,
-      },
-    });
-
-    let fullText = '';
-    for await (const chunk of result) {
-        if (signal?.aborted) {
-            throw new DOMException("Aborted", "AbortError");
-        }
-        const chunkText = chunk.text;
-        if (chunkText) {
-            fullText += chunkText;
-            const progress = 10 + (Math.min(1, fullText.length / ESTIMATED_CHAR_LENGTH) * 85); 
-            onProgress?.(Math.round(progress));
-        }
-    }
-
-    onProgress?.(98); 
-    let text = fullText.replace(/^```json\s*/, "").replace(/\s*```$/, "");
-    const parsed = JSON.parse(text);
-    return parsed.blocks || [];
-
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw error;
-    }
-    console.error("Gemini Extraction Error:", error);
-    throw error;
+    return JSON.parse(result.text);
+  } catch (e) {
+    console.error("Failed to parse CSV extraction result", e);
+    return {};
   }
 };
